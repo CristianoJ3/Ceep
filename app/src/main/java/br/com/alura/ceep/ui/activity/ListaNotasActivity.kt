@@ -36,6 +36,7 @@ class ListaNotasActivity : AppCompatActivity() {
         setContentView(binding.root)
         configuraFab()
         configuraRecyclerView()
+        configuraSwipeRefresh()
         lifecycleScope.launch {
             launch {
                 sincroniza()
@@ -58,11 +59,21 @@ class ListaNotasActivity : AppCompatActivity() {
         }
     }
 
+
     private fun configuraRecyclerView() {
         binding.activityListaNotasRecyclerview.adapter = adapter
         adapter.quandoClicaNoItem = { nota ->
             vaiPara(FormNotaActivity::class.java) {
                 putExtra(NOTA_ID, nota.id)
+            }
+        }
+    }
+
+    private fun configuraSwipeRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            lifecycleScope.launch {
+                sincroniza()
+                buscaNotas()
             }
         }
     }
@@ -79,6 +90,7 @@ class ListaNotasActivity : AppCompatActivity() {
                         adapter.atualiza(notasEncontradas)
                         GONE
                     }
+                binding.swipeRefreshLayout.isRefreshing = false
             }
     }
 }
